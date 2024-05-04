@@ -30,7 +30,7 @@ header{
     justify-content: center;
 }
 
-button{
+header button{
     background-color: #00B2FF;
     border: none;
     color: white;
@@ -42,6 +42,6 @@ button{
     transition: 0.5s;
 }
 
-button:hover{
+header button:hover{
     scale: 1.1;
 }
