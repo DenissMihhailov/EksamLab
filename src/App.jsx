@@ -6,8 +6,10 @@ import Header from './components/header/header';
 import Authorization from './components/authorization/authorization';
 import Registration from './components/registration/registration';
 import EmailConfirmation from './components/email-confirmation/email-confirmation';
+import UserProfile from './components/user-profile/user-profile';
 
 function App() {
+
     return (
       <Router>
         <div className="App">
@@ -17,6 +19,7 @@ function App() {
           <Route path="/authorization" element={<Authorization />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/email" element={<EmailConfirmation />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Routes>
         </div>
       </Router>

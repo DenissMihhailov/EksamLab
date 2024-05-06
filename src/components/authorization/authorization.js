@@ -38,11 +38,11 @@ function Authorization() {
         navigate('/');
       } else {
         const data = await response.json();
-        if (response.status === 401 && data.message === 'Incorrect email or password') {
+        if (response.status === 401 && data.message === 'Invalid email or password') {
           setIsLoading(false);
           setErrorMessage('Неправильная почта или пароль');
         } else {
-          throw new Error('Ошибка сервера. Попробуйте позже');
+          throw new Error(data.message);
         }
       }
     } catch (error) {
