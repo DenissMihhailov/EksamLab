@@ -3,7 +3,7 @@ const app = express();
 const userRoute = require('./routes/user');
 const mongoose = require('mongoose');
 
-const db = "mongodb+srv://Deniss:narvahaigla@firstcluster.k4micc7.mongodb.net/lasti?retryWrites=true&w=majority"
+const db = "mongodb+srv://Deniss:narvahaigla@firstcluster.k4micc7.mongodb.net/eksamlab?retryWrites=true&w=majority"
 
 mongoose.connect(db)
   .then(() => console.log('Database connected'));

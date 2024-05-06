@@ -3,6 +3,38 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const {sendEmail} = require('../mailer')
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const generateAccessToken = (user) => {
+  const payload = {
+    userId: user._id,
+    userEmail: user.email,
+  };
+
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+
+  return accessToken;
+};
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const accessToken = generateAccessToken(user);
+
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.post('/send-registration-email', async (req, res) => {
   const { email, code } = req.body;
