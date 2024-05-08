@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
-import './registration.css';
+import './change-password.css';
 import { SpinnerCircularFixed } from 'spinners-react';
-import EmailConfirmation from '../email-confirmation/email-confirmation';
+import { jwtDecode } from 'jwt-decode';
 
 function Registration() {
-  const [email, setEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
-  const [code, setRandomCode] = useState(null);
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const generateRandomCode = () => {
-    const min = 100000;
-    const max = 999999;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
+  const token = localStorage.getItem('accessToken');
+    const decodedToken = jwtDecode(token);
+    const email = decodedToken.userEmail;
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -35,69 +26,55 @@ function Registration() {
       return;
     }
 
-    if(password === '' || email === '' || confirmPassword === ''){
+    if(password === '' || oldPassword === '' || confirmPassword === ''){
       setErrorMessage('Заполните все данные');
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setErrorMessage('Неверный формат электронной почты');
       return;
     }
 
     setIsLoading(true);
 
-    var randomCode = generateRandomCode();
-    setRandomCode(`${randomCode}`)
-
     try {
-      const response = await fetch('/api/send-registration-email', {
+      const response = await fetch('/api/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, code: randomCode }),
+        body: JSON.stringify({ oldPassword, newPassword: password, email }),
       });
 
       const responseData = await response.json();
 
       if (response.status === 200) {
-        setShowEmailConfirmation(true);
+        setErrorMessage('Пароль изменен');
       } else {
-        if (response.status === 400 && responseData.message === 'User already exists') {
-          setErrorMessage('Такой пользователь уже зарегистрирован');
+        if (response.status === 401 && responseData.message === 'Old password does not match') {
+          setErrorMessage('Старый пароль неправильный');
         } else {
           throw new Error('Ошибка сервера. Попробуйте позже');
         }
       }
     } catch (error) {
-      console.error('Ошибка регистрации:', error);
-      setErrorMessage('Ошибка регистрации');
+      console.error('Ошибка смены пароля:', error);
+      setErrorMessage('Ошибка смены пароля');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (showEmailConfirmation) {
-    return (
-        <EmailConfirmation email={email} password={password} code={code} />
-    );
-  }
-
   return (
     <div className='authorization-container'>
-      <h1>Регистрация</h1>
+      <h1>Сменить пароль</h1>
 
       <div className='input-with-text'>
-        <p>Почта</p>
-        <input type='text' value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown}/>
+        <p>Старый пароль</p>
+        <input type='password' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
       <div className='input-with-text'>
-        <p>Пароль</p>
+        <p>Новый пароль</p>
         <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
       <div className='input-with-text'>
-        <p>Повторите пароль</p>
+        <p>Повторите новый пароль</p>
         <input type='password' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
 

@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import './email-confirmation.css';
 import { SpinnerCircularFixed } from 'spinners-react';
+import { useNavigate } from 'react-router-dom';
 
 function EmailConfirmation({ email, password, code }) {
+  const navigate = useNavigate();
   const [userCode, setUserCode] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
 
   const handleSubmit = async () => {
     if(userCode === ''){
@@ -32,7 +40,28 @@ function EmailConfirmation({ email, password, code }) {
         const responseData = await response.json();
   
         if (response.status === 200) {
-          setErrorMessage('Регистрация прошла успешно');
+          try {
+            const response = await fetch('/api/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email, password }),
+            });
+      
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem('accessToken', data.accessToken);
+              setIsLoading(false);
+              navigate('/profile');
+            } else {
+                throw new Error(response);
+            }
+          } catch (error) {
+            setIsLoading(false);
+            console.error('Ошибка аутентификации:', error);
+            navigate('/login');
+          }
         } else {
           if (response.status === 400 && responseData.message === 'User already exists') {
             setErrorMessage('Такой пользователь уже зарегистрирован');
@@ -60,7 +89,7 @@ function EmailConfirmation({ email, password, code }) {
 
       <div className='input-with-text'>
         <p>Код с письма</p>
-        <input type='text' value={userCode} onChange={(e) => setUserCode(e.target.value)} />
+        <input type='text' value={userCode} onChange={(e) => setUserCode(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
       
       <button className={`${isLoading ? 'disabled' : ''}`}  onClick={handleSubmit} disabled={isLoading}>

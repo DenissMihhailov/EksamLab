@@ -7,6 +7,7 @@ import Authorization from './components/authorization/authorization';
 import Registration from './components/registration/registration';
 import EmailConfirmation from './components/email-confirmation/email-confirmation';
 import UserProfile from './components/user-profile/user-profile';
+import ChangePassword from './components/change-password/change-password';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/registration" element={<Registration />} />
           <Route path="/email" element={<EmailConfirmation />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/change-password" element={<ChangePassword />} />
         </Routes>
         </div>
       </Router>

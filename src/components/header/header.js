@@ -19,22 +19,14 @@ function Header() {
     navigate('/profile');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken'); 
-    navigate('/');
-  };
-
   return (
     <header className="header">
       <div className="header-cell">
-        <h1 onClick={showMainContainer}>Eksam<span>Lab</span></h1>
+        <h1 onClick={showMainContainer} title="Главная страница">Eksam<span>Lab</span></h1>
       </div>
       <div className="header-cell">
         {isLoggedIn ? (
-          <>
-          <button onClick={showProfileContainer}>Профиль</button>
-          <button onClick={handleLogout}>Выход</button> 
-        </>
+          <button onClick={showProfileContainer} title="Войти в профиль">Профиль</button>
         ) : (
           <button onClick={showLoginContainer}>Вход</button>
         )}

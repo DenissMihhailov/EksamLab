@@ -14,6 +14,12 @@ function Authorization() {
     navigate('/registration');
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   const handleLogin = async () => {
 
     if(password === '' || email === ''){
@@ -58,11 +64,11 @@ function Authorization() {
 
       <div className='input-with-text'>
         <p>Почта</p>
-        <input type='text' value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input type='text' value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
       <div className='input-with-text'>
         <p>Пароль</p>
-        <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown}/>
       </div>
 
       <p className='registration-button' onClick={showRegistrationContainer}>Зарегистрироваться</p>
