@@ -1,0 +1,24 @@
+.sidebar {
+    position: absolute;
+    top: 60px; /* Высота хедера */
+    left: 0;
+    width: 250px;
+    height: calc(100% - 60px); /* Высота равна высоте окна минус высота хедера */
+    color: #000000;
+    box-shadow: -3px 0px 12px 0px rgba(0,0,0,0.2);
+  }
+
+.sidebar-link{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F7F7F7;
+    height: 40px;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.sidebar-link:hover{
+    background-color: #E6F8FF;
+}
+  

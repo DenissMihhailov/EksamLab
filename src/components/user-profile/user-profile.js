@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
-function Header() {
+function Profile() {
     const navigate = useNavigate();
     const isLoggedIn = !!localStorage.getItem('accessToken');
 
@@ -76,4 +76,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default Profile;

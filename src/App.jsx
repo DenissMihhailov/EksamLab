@@ -8,6 +8,8 @@ import Registration from './components/registration/registration';
 import EmailConfirmation from './components/email-confirmation/email-confirmation';
 import UserProfile from './components/user-profile/user-profile';
 import ChangePassword from './components/change-password/change-password';
+import ThemeSubject from './components/theme-subject/theme-subject';
+import TaskSubject from './components/task-subject/task-subject';
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
           <Route path="/email" element={<EmailConfirmation />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/themes" element={<ThemeSubject />} />
+          <Route path="/tasks" element={<TaskSubject />} />
         </Routes>
         </div>
       </Router>

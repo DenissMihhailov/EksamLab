@@ -20,6 +20,7 @@ header{
     box-shadow: 0px 3px 12px -11px #000000;
     display: flex;
     justify-content: space-between;
+    z-index: 1;
 }
 
 .header-cell{

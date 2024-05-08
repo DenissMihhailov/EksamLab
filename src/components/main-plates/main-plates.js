@@ -1,7 +1,9 @@
 import React from 'react';
 import './main-plates.css';
+import { useNavigate } from 'react-router-dom';
 
 function MainPlates() {
+  const navigate = useNavigate();
 
   const plates = [];
 
@@ -13,16 +15,21 @@ function MainPlates() {
     {title: 'История', color: '#ffb8b8'}, 
     {title: 'Обществоведение', color: '#b8f2ff'}, 
   ]
+  
+  const handleSubject = () => {
+    navigate('/themes')
+  }
 
   for (let i = 0; i < subject.length; i++) {
     plates.push(
-      <div className='plate-container'>
+      <div className='plate-container' onClick={handleSubject}>
         <div className='plate' key={i} style={{ backgroundColor: subject[i].color }}>
           <p>{subject[i].title}</p>
         </div>
       </div>
     );
   }
+
 
   return (
     <div className='main-plates-container'>
