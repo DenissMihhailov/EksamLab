@@ -9,7 +9,6 @@ import EmailConfirmation from './components/email-confirmation/email-confirmatio
 import UserProfile from './components/user-profile/user-profile';
 import ChangePassword from './components/change-password/change-password';
 import ThemeSubject from './components/theme-subject/theme-subject';
-import TaskSubject from './components/task-subject/task-subject';
 
 function App() {
   return (
@@ -25,7 +24,6 @@ function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/themes/:subjectTitle/:themeTitle/:taskYear" element={<ThemeSubject />} />
           <Route path="/themes/:subjectTitle/:themeTitle/*" element={<ThemeSubject />} /> 
-          <Route path="/tasks" element={<TaskSubject />} />
         </Routes>
 
       </div>

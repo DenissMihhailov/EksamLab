@@ -68,6 +68,15 @@
     border-radius: 10px;
     padding: 0px 10px;
     font-size: 16px;
+    transition: 0.5s;
+}
+
+.incorrect{
+    background-color: rgba(255, 0, 0, 0.3) !important;
+}
+
+.correct{
+    background-color: rgba(0, 255, 4, 0.3) !important;
 }
 
 .buttons-task-container{
@@ -106,6 +115,9 @@
 }
 
 .buttons-task-container button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 0;
     height: 70%;
     width: 30%;
