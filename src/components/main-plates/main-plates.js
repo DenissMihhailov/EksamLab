@@ -16,13 +16,13 @@ function MainPlates() {
     {title: 'Обществоведение', color: '#b8f2ff'}, 
   ]
   
-  const handleSubject = () => {
-    navigate('/themes')
+  const handleSubject = (subjectTitle) => {
+    navigate(`/themes/${subjectTitle}/Полные%20экзамены`);
   }
-
+  
   for (let i = 0; i < subject.length; i++) {
     plates.push(
-      <div className='plate-container' onClick={handleSubject}>
+      <div className='plate-container' onClick={() => handleSubject(subject[i].title)}>
         <div className='plate' key={i} style={{ backgroundColor: subject[i].color }}>
           <p>{subject[i].title}</p>
         </div>

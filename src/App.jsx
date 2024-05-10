@@ -12,10 +12,9 @@ import ThemeSubject from './components/theme-subject/theme-subject';
 import TaskSubject from './components/task-subject/task-subject';
 
 function App() {
-
-    return (
-      <Router>
-        <div className="App">
+  return (
+    <Router>
+      <div className="App">
         <Header />
         <Routes>
           <Route path="/" element={<MainPlates />} />
@@ -24,12 +23,14 @@ function App() {
           <Route path="/email" element={<EmailConfirmation />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/themes" element={<ThemeSubject />} />
+          <Route path="/themes/:subjectTitle/:themeTitle/:taskYear" element={<ThemeSubject />} />
+          <Route path="/themes/:subjectTitle/:themeTitle/*" element={<ThemeSubject />} /> 
           <Route path="/tasks" element={<TaskSubject />} />
         </Routes>
-        </div>
-      </Router>
-    );
-  }
+
+      </div>
+    </Router>
+  );
+}
 
 export default App;

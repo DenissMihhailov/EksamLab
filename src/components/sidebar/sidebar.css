@@ -16,9 +16,41 @@
     height: 40px;
     transition: 0.5s;
     cursor: pointer;
+    animation: fadeIn 0.5s ease forwards;
 }
 
+
 .sidebar-link:hover{
-    background-color: #E6F8FF;
+    background-color: #ace5fb;
 }
+
+.active{
+    background-color: #ace5fb;
+    opacity: 1;
+}
+
+.sidebar-skeleton {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #F7F7F7 25%, #ffffff 50%, #F7F7F7 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s ease infinite;
+  }
   
+  @keyframes loading {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }

@@ -95,13 +95,13 @@
 }
 
 .next-task-icon{
-    right: 0;
     rotate: 180deg;
     margin-right: 20px;
+    margin-left: 400px;
 }
 
 .previous-task-icon{
-    left: 0;
+    margin-right: 400px;
     margin-left: 20px;
 }
 
