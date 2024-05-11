@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './user-profile.css';
 import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -7,14 +7,12 @@ import { jwtDecode } from 'jwt-decode';
 function Profile() {
     const navigate = useNavigate();
     const isLoggedIn = !!localStorage.getItem('accessToken');
+    const [themeStatistic, setThemeStatistic] = useState([]);
+    const subjectTitle = 'Математика' // Пока только математика
 
     const token = localStorage.getItem('accessToken');
     const decodedToken = jwtDecode(token);
     const email = decodedToken.userEmail;
-
-    if (!isLoggedIn) {
-      return <Navigate to="/authorization" replace />;
-    }
 
     const handleLogout = () => {
       localStorage.removeItem('accessToken'); 
@@ -25,23 +23,51 @@ function Profile() {
       navigate('/change-password');
     };
 
-    const statistic = []
-
-    const subject = [
-      {title: 'Тригонометрия', procent: '12%'}, 
-      {title: 'Планиметрия', procent: '60%'}, 
-      {title: 'Геометрия', procent: '45%'}, 
-      {title: 'Задачи на проценты', procent: '90%'}, 
-      {title: 'Теория вероятностей', procent: '20%'}, 
-      {title: 'Функции', procent: '5%'}, 
-    ]
+    useEffect(() => {
+      const getThemesStatistic = async (subjectTitle, email) => {
+        try {
+          const response = await fetch('/api/tasks/get-themes-progress', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subjectTitle, email }),
+          });
   
-    for (let i = 0; i < subject.length; i++) {
+          if (response.ok) {
+            const { themesStatistic } = await response.json();
+            setThemeStatistic(themesStatistic)
+          }else {
+            const data = await response.json();
+            throw new Error(data.message);
+          }
+        } catch (error) {
+          console.error('Ошибка при получении списка годов:', error);
+        } finally {
+          // setLoading(false);
+        }
+      };
+  
+      getThemesStatistic(subjectTitle, email);
+    }, [subjectTitle, email]);
+    
+    // const subject = [
+    //   {title: 'Тригонометрия', procent: '12%'}, 
+    //   {title: 'Планиметрия', procent: '60%'}, 
+    //   {title: 'Геометрия', procent: '45%'}, 
+    //   {title: 'Задачи на проценты', procent: '90%'}, 
+    //   {title: 'Теория вероятностей', procent: '20%'}, 
+    //   {title: 'Функции', procent: '5%'}, 
+    // ]
+
+    const statistic = []
+    
+    for (let i = 0; i < themeStatistic.length; i++) {
       statistic.push(
         <div className='subject-progress-profile-container'>
-          <p>{subject[i].title}</p>
-            <div className='statistic-stick'><p>{subject[i].procent}</p>
-            <div className='color-statistic-stick' style={{ width: subject[i].procent }}></div>
+          <p>{themeStatistic[i].title}</p>
+            <div className='statistic-stick'><p>{themeStatistic[i].procent}</p>
+            <div className='color-statistic-stick' style={{ width: themeStatistic[i].procent }}></div>
           </div>
         </div>
       );
@@ -51,6 +77,10 @@ function Profile() {
     //   localStorage.removeItem('accessToken'); 
     //   navigate('/');
     // };
+
+  if (!isLoggedIn) {
+    return <Navigate to="/authorization" replace />;
+  }
  
   return (
     <div className='profile-container'>

@@ -3,40 +3,43 @@ import './theme-subject.css';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../sidebar/sidebar'
 import TaskSubject from '../task-subject/task-subject'
-// import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 
 function Theme() {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem('accessToken');
   const [tasksYears, setTasksYears] = useState([]);
+  const [themeStatistic, setThemeStatistic] = useState({procent: '0%'});
   const { subjectTitle, themeTitle, taskYear } = useParams();
   // const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(taskYear);
 
-  // const token = localStorage.getItem('accessToken');
-  // const decodedToken = jwtDecode(token);
-  // const email = decodedToken.userEmail;
+  const token = localStorage.getItem('accessToken');
+  const decodedToken = jwtDecode(token);
+  const email = decodedToken.userEmail;
 
   if (taskYear !== selectedYear) {
     setSelectedYear(taskYear);
   }
 
   useEffect(() => {
-    const getTasksYears = async (subjectTitle, themeTitle) => {
+    setThemeStatistic({procent: '0%'})
+    const getTasksYears = async (subjectTitle, themeTitle, email) => {
       try {
-        const response = await fetch('/api/tasks/get-tasks-years', {
+        const response = await fetch('/api/tasks/get-tasks-years-with-progress', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ subjectTitle, themeTitle }),
+          body: JSON.stringify({ subjectTitle, themeTitle, email }),
         });
 
         if (response.ok) {
-          const tasksYearsRes = await response.json();
-          setTasksYears(tasksYearsRes);
-        } else {
+          const { tasksYearsWithProgress, themeStatistic } = await response.json();
+          setTasksYears(tasksYearsWithProgress);
+          setThemeStatistic(themeStatistic);
+        }else {
           const data = await response.json();
           throw new Error(data.message);
         }
@@ -49,9 +52,9 @@ function Theme() {
 
     if (themeTitle) {
       // setLoading(true);
-      getTasksYears(subjectTitle, themeTitle);
+      getTasksYears(subjectTitle, themeTitle, email);
     }
-  }, [subjectTitle, themeTitle]);
+  }, [subjectTitle, themeTitle, email, taskYear]);
 
   if (!isLoggedIn) {
     return <Navigate to="/authorization" replace />;
@@ -79,13 +82,11 @@ function Theme() {
       Вы можете видеть свой текущий прогресс по экзамену, по степени заполнения кнопки зеленым цветом.
     `;
   }
-
-  const themeStatistic = { procent: '12%' }
-
+  
   const testButtons = tasksYears.map((year, index) => (
-    <div className='test-button-container' key={index} onClick={() => showTasks(year)}>
+    <div className='test-button-container' key={index} onClick={() => showTasks(year.year)}>
       <div className='test-button' title={year.procent}>
-        <p>{year}</p>
+        <p>{year.year}</p>
         <div className='color-test-button' style={{ width: year.procent }}></div>
       </div>
     </div>

@@ -17,30 +17,94 @@ router.post('/get-themes', async (req, res) => {
     }
   });
 
-  router.post('/get-tasks-years', async (req, res) => {
-    const { subjectTitle, themeTitle } = req.body;
+  router.post('/get-tasks-years-with-progress', async (req, res) => {
+    const { subjectTitle, themeTitle, email } = req.body;
 
     try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let tasks;
         if (themeTitle === 'Полные экзамены') {
-            var tasks = await Task.find({ subject: subjectTitle});
-        }else{
+            tasks = await Task.find({ subject: subjectTitle });
+        } else {
             tasks = await Task.find({ subject: subjectTitle, theme: themeTitle });
         }
-      const years = tasks.map(task => task.year);
-      const uniqueYears = [...new Set(years)];
-      const sortedUniqueYears = uniqueYears.sort((a, b) => a - b);
-      res.json(sortedUniqueYears);
+
+        const years = tasks.map(task => task.year);
+        const uniqueYears = [...new Set(years)];
+        const sortedUniqueYears = uniqueYears.sort((a, b) => a - b);
+
+        const tasksYearsWithProgress = sortedUniqueYears.map(year => {
+            const userTasksForYear = user.tasks.filter(taskId => tasks.some(task => task._id.toString() === taskId.toString() && task.year === year));
+            const totalTasksForYear = tasks.filter(task => task.year === year).length;
+            const progressPercentage = totalTasksForYear > 0 ? Math.round((userTasksForYear.length / totalTasksForYear) * 100) : 0;
+            return { year, procent: `${progressPercentage}%` };
+        });
+
+        const totalTasksForTheme = tasks.length;
+        const userTasksForTheme = user.tasks.filter(taskId => tasks.some(task => task._id.toString() === taskId.toString())).length;
+        const themePercentage = totalTasksForTheme > 0 ? Math.round((userTasksForTheme / totalTasksForTheme) * 100) : 0;
+        const themeStatistic = { procent: `${themePercentage}%` };
+
+        res.json({ tasksYearsWithProgress, themeStatistic });
     } catch (error) {
-      console.error('Error fetching themes:', error);
-      res.status(500).json({ message: 'An error occurred while fetching themes' });
+        console.error('Error fetching themes with progress:', error);
+        res.status(500).json({ message: 'An error occurred while fetching themes with progress' });
     }
-  });
+});
+
+router.post('/get-themes-progress', async (req, res) => {
+  const { subjectTitle, email } = req.body;
+
+  try {
+    const themes = await Theme.find({ subject: subjectTitle });
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const themeProgress = [];
+
+    let totalTasks = 0;
+    let userTotalTasks = 0;
+
+    for (const theme of themes) {
+      const tasks = await Task.find({ theme: theme.title });
+      const userTasks = user.tasks.filter(taskId => tasks.some(task => task._id.toString() === taskId.toString()));
+
+      const progressPercentage = tasks.length > 0 ? Math.round((userTasks.length / tasks.length) * 100) : 0;
+
+      themeProgress.push({
+        title: theme.title,
+        procent: `${progressPercentage}%`
+      });
+
+      totalTasks += tasks.length;
+      userTotalTasks += userTasks.length;
+    }
+
+    const overallProgressPercentage = totalTasks > 0 ? Math.round((userTotalTasks / totalTasks) * 100) : 0;
+
+    themeProgress.unshift({
+      title: 'Общий прогресс по предмету',
+      procent: `${overallProgressPercentage}%`
+    });
+
+    res.json({ themesStatistic: themeProgress });
+  } catch (error) {
+    console.error('Error fetching themes progress:', error);
+    res.status(500).json({ message: 'An error occurred while fetching themes progress' });
+  }
+});
 
   router.post('/get-tasks', async (req, res) => {
     const { subjectTitle, themeTitle, taskYear, email } = req.body;
 
     try {
-        // Найти пользователя по его email
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -53,10 +117,8 @@ router.post('/get-themes', async (req, res) => {
         } else {
             tasks = await Task.find({ subject: subjectTitle, theme: themeTitle, year: taskYear });
         }
-
-        // Создать новый массив с заданиями и их статусом isDone
         const tasksWithStatus = tasks.map(task => {
-            const isDone = user.tasks.includes(task._id); // Проверяем, выполнено ли задание пользователем
+            const isDone = user.tasks.includes(task._id);
             return { ...task.toObject(), isDone };
         });
 
