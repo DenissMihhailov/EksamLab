@@ -8,7 +8,9 @@ function Profile() {
     const navigate = useNavigate();
     const isLoggedIn = !!localStorage.getItem('accessToken');
     const [themeStatistic, setThemeStatistic] = useState([]);
+    const [loading, setLoading] = useState(true);
     const subjectTitle = 'Математика' // Пока только математика
+    const [widthAfter, setWidthAfter] = useState(false);
 
     const token = localStorage.getItem('accessToken');
     const decodedToken = jwtDecode(token);
@@ -37,6 +39,9 @@ function Profile() {
           if (response.ok) {
             const { themesStatistic } = await response.json();
             setThemeStatistic(themesStatistic)
+            setTimeout(() => {
+              setWidthAfter(true);
+            }, 100);
           }else {
             const data = await response.json();
             throw new Error(data.message);
@@ -44,39 +49,17 @@ function Profile() {
         } catch (error) {
           console.error('Ошибка при получении списка годов:', error);
         } finally {
-          // setLoading(false);
+          setLoading(false);
+
+          setTimeout(() => {
+            setWidthAfter(true);
+          }, 1000);
         }
       };
   
       getThemesStatistic(subjectTitle, email);
     }, [subjectTitle, email]);
-    
-    // const subject = [
-    //   {title: 'Тригонометрия', procent: '12%'}, 
-    //   {title: 'Планиметрия', procent: '60%'}, 
-    //   {title: 'Геометрия', procent: '45%'}, 
-    //   {title: 'Задачи на проценты', procent: '90%'}, 
-    //   {title: 'Теория вероятностей', procent: '20%'}, 
-    //   {title: 'Функции', procent: '5%'}, 
-    // ]
 
-    const statistic = []
-    
-    for (let i = 0; i < themeStatistic.length; i++) {
-      statistic.push(
-        <div className='subject-progress-profile-container'>
-          <p>{themeStatistic[i].title}</p>
-            <div className='statistic-stick'><p>{themeStatistic[i].procent}</p>
-            <div className='color-statistic-stick' style={{ width: themeStatistic[i].procent }}></div>
-          </div>
-        </div>
-      );
-    }
-
-    // const changePassword = () => {
-    //   localStorage.removeItem('accessToken'); 
-    //   navigate('/');
-    // };
 
   if (!isLoggedIn) {
     return <Navigate to="/authorization" replace />;
@@ -96,12 +79,29 @@ function Profile() {
       <div className='progress-profile-container'>
         <h1>Прогресс по математике</h1>
 
+        {loading ? (
         <div className='subjects-progress-profile-container'>
-          {statistic}
+          {[...Array(5)].map((_, index) => (
+            <div className='subject-progress-profile-container-skeleton' key={index}>
+                <div className='statistic-stick-p-skeleton'></div>
+                <div className='statistic-stick-skeleton'></div>
+            </div>
+          ))}
         </div>
-
+      ) : (
+        <div className='subjects-progress-profile-container'>
+          {themeStatistic.map((theme, index) => (
+            <div className='subject-progress-profile-container' key={index}>
+              <p>{theme.title}</p>
+              <div className='statistic-stick'>
+                <p>{theme.procent}</p>
+                <div className='color-statistic-stick' style={{ width: widthAfter ? `${theme.procent}` : '0%' }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       </div>
-
     </div>
   );
 }

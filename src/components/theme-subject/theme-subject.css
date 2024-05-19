@@ -16,10 +16,20 @@
     margin-top: 50px;
     margin-bottom: 50px;
     border-radius: 20px;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.theme-text-container{
+    width: 85%;
+    height: 240px;
+}
+
+.theme-text-container a{
+    color: #00b2ff;
+    text-decoration: none;
 }
 
 .theme-text{
-    width: 85%;
     font-weight: 500;
 }
 
@@ -56,9 +66,13 @@
 }
 
 .statistic-stick p{
+    display: flex;
+    align-items: center;
     margin: 0;
     z-index: 1;
+    height: 100%;
     font-weight: 400;
+    text-align: center;
 }
 
 .color-statistic-stick{
@@ -100,6 +114,15 @@
     font-size: 24px;
     cursor: pointer;
     transition: 0.5s;
+}
+
+.test-button-skeleton{
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #dadada 25%, #cfcfcf 50%, #dadada 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s ease infinite;
 }
 
 .test-button p{

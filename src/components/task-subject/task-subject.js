@@ -9,6 +9,7 @@ function Task({ subjectTitle, themeTitle, taskYear }) {
   const [taskArray, setTaskArray] = useState([]);
   const [userAnswers, setUserAnswers] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(true);
   const [buttonMessage, setButtonMessage] = useState()
 
   const token = localStorage.getItem('accessToken');
@@ -34,11 +35,14 @@ function Task({ subjectTitle, themeTitle, taskYear }) {
       }
     } catch (error) {
       console.error('Ошибка при получении списка тем:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (taskYear) {
+      setLoading(true);
       getTasks(subjectTitle, themeTitle, taskYear, email);
     }
   }, [subjectTitle, themeTitle, taskYear, email]);
@@ -106,22 +110,39 @@ function Task({ subjectTitle, themeTitle, taskYear }) {
     setUserAnswers(updatedUserAnswers);
 };
 
-  return (
-    <div>
-      <div className='task-container'>
-        <h1>{themeTitle} {taskYear}</h1>
-        {currentTask && (
-          <div className='exam-task-container'>
-            <div className='part-container'>
-              <p className='part-text'>Часть {currentTask.partOfExam}</p>
-              <p className='part-done'>{currentTask.isDone ? 'Выполнено' : ''}</p>
+return (
+  <div>
+    <div className='task-container'>
+      <h1>{themeTitle} {taskYear}</h1>
+      
+      {loading ? (
+        <div className='exam-task-container'>
+        <div className='part-container'>
+          <p className='part-text-skeleton'></p>
+          <p className='part-done-skeleton'></p>
+        </div>
+        <p className='task-order-text-skeleton'></p>
+        <div className='task-description-container-skeleton'></div>
+        <p className='answer-task-text-skeleton'></p>
+        <div className='answers-task-container'>
+            <div className='answer-task-container'>
+              <div className='answer-task-container-p-skeleton'></div>
+              <div className='answer-task-container-input-skeleton'></div>
             </div>
-            <p className='task-order-text'>Задание {currentTask.orderInExam}. ({currentTask.pointsInExam} баллов)</p>
-            <div className='task-description-container'>
-              <p className='task-description'>{currentTask.text}</p>
-            </div>
-            <p className='answer-task-text'>Ответы ({currentTask.answers.length}):</p>
-            <div className='answers-task-container'>
+        </div>
+      </div>
+      ) : (  
+        <div className='exam-task-container'>
+          <div className='part-container'>
+            <p className='part-text'>Часть {currentTask.partOfExam}</p>
+            <p className='part-done'>{currentTask.isDone ? 'Выполнено' : ''}</p>
+          </div>
+          <p className='task-order-text'>Задание {currentTask.orderInExam}. ({currentTask.pointsInExam} баллов)</p>
+          <div className='task-description-container'>
+            <p className='task-description'>{currentTask.text}</p>
+          </div>
+          <p className='answer-task-text'>Ответы ({currentTask.answers.length}):</p>
+          <div className='answers-task-container'>
             {currentTask && currentTask.answers.map((answer, index) => (
               <div key={`${currentTaskIndex}-${index}`} className={`answer-task-container`}>
                 <p>{answer.answerText} ({answer.answer[0]})</p>
@@ -133,17 +154,19 @@ function Task({ subjectTitle, themeTitle, taskYear }) {
                 />
               </div>
             ))}
-            </div>
           </div>
-        )}
-        <div className='buttons-task-container'>
-          {currentTaskIndex > 0 && <img className='previous-task-icon' src="/icons/arrow.png" alt="Exit Icon" title="Предыдущее задание" onClick={goToPreviousTask} />}
-          {currentTaskIndex < taskArray.length - 1 && <img className='next-task-icon' src="/icons/arrow.png" alt="Exit Icon" title="Следующее задание" onClick={goToNextTask} />}
-          <button onClick={() => handleCheckAnswers(email, currentTask._id)}>{isLoading ? <SpinnerCircularFixed size={25} thickness={180} speed={138} color="rgba(255, 255, 255, 1)" secondaryColor="rgba(0, 0, 0, 0.5)" /> : buttonMessage ? buttonMessage : 'Проверить ответ'}</button>
         </div>
+      )}
+
+      <div className='buttons-task-container'>
+        {currentTaskIndex > 0 && <img className='previous-task-icon' src="/icons/arrow2.png" alt="Exit Icon" title="Предыдущее задание" onClick={goToPreviousTask} />}
+        {currentTaskIndex < taskArray.length - 1 && <img className='next-task-icon' src="/icons/arrow2.png" alt="Exit Icon" title="Следующее задание" onClick={goToNextTask} />}
+        <button onClick={() => handleCheckAnswers(email, currentTask._id)}>{isLoading ? <SpinnerCircularFixed size={25} thickness={180} speed={138} color="rgba(255, 255, 255, 1)" secondaryColor="rgba(0, 0, 0, 0.5)" /> : buttonMessage ? buttonMessage : 'Проверить ответ'}</button>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 export default Task;

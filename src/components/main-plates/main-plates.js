@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 function MainPlates() {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem('accessToken');
 
   const plates = [];
 
@@ -17,7 +18,15 @@ function MainPlates() {
   ]
   
   const handleSubject = (subjectTitle) => {
-    navigate(`/themes/${subjectTitle}/Полные%20экзамены`);
+    if (isLoggedIn) {
+      if (subjectTitle === 'Математика') {
+        navigate(`/themes/${subjectTitle}/Полные%20экзамены`);
+      }else{
+        navigate(`/updates`);
+      }
+    }else{
+      navigate(`/authorization`);
+    }
   }
   
   for (let i = 0; i < subject.length; i++) {

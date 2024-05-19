@@ -49,7 +49,11 @@ router.post('/get-themes', async (req, res) => {
         const themePercentage = totalTasksForTheme > 0 ? Math.round((userTasksForTheme / totalTasksForTheme) * 100) : 0;
         const themeStatistic = { procent: `${themePercentage}%` };
 
-        res.json({ tasksYearsWithProgress, themeStatistic });
+        const theme = await Theme.findOne({ title: themeTitle })
+
+        const link = theme ? theme.link : ''
+
+        res.json({ tasksYearsWithProgress, themeStatistic, link });
     } catch (error) {
         console.error('Error fetching themes with progress:', error);
         res.status(500).json({ message: 'An error occurred while fetching themes with progress' });

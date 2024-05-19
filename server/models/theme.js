@@ -9,6 +9,9 @@ const themeSchema = new mongoose.Schema({
     subject: {
       type: String,
       required: true
+    },
+    link:{
+      type: String,
     }
   }, { versionKey: false });
 
